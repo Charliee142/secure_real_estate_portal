@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Rent {{ property.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h2 class="text-center text-primary">{{ property.title }}</h2>
+                    <p class="text-center text-muted"><i class="fas fa-map-marker-alt"></i> {{ property.location }}</p>
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="months" class="form-label fw-bold">Select Rent Duration:</label>
+                            <select name="months" id="months" class="form-select">
+                                {% for rental_price in property.rental_prices.all %}
+                                    <option value="{{ rental_price.months }}">
+                                        {{ rental_price.months }} month(s) - NGN{{ rental_price.price }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-credit-card"></i> Proceed with Payment
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{% url 'property_detail' property.slug %}" class="text-decoration-none text-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Property Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

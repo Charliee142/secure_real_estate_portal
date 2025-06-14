@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Complaint Details</h2>
+    <p><strong>Submitted on:</strong> {{ complaint.created_at }}</p>
+    <p><strong>Message:</strong> {{ complaint.message }}</p>
+    {% if complaint.property %}
+    <p><strong>Property:</strong> {{ complaint.property }}</p>
+    {% endif %}
+</div>
+{% endblock %}

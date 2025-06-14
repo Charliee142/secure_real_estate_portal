@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+ <!-- Fraud Reports -->
+  <div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-body">
+        <h4 class="card-title mb-3 text-dark">🚨 Your Fraud Reports</h4>
+        {% if fraud_reports %}
+            <ul class="list-group list-group-flush">
+                {% for report in fraud_reports %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ report.title }}</strong><br>
+                            <small class="text-muted">{{ report.feedback }}</small>
+                        </div>
+                        <span class="badge bg-{{ report.is_reviewed|yesno:'success,warning' }}">
+                            {{ report.is_reviewed|yesno:'Reviewed,Pending' }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info mb-0">
+                You haven't submitted any fraud reports yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Report a User -->
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body">
+        <h4 class="card-title mb-3 text-dark">📢 Report Another User</h4>
+        <div class="list-group">
+            {% for u in all_users %}
+                <a href="{% url 'report_fraud' u.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    {{ u.username }}
+                    <i class="bi bi-flag-fill text-danger"></i>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Report a User Modal -->
+{% endblock %}

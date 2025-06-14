@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-dark text-center">🏡 Tenant Dashboard</h2>
+    <div class="text-center mb-4">
+        <img src="{% static 'image/default.jpg' %}" width="70" height="70"  alt="Tenant Dashboard" class="img-fluid rounded-4">
+    <!-- Welcome -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-primary">Welcome, {{ user.username }} 👋</h2>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">My Properties</h5>
+                <i class="bi bi-building fs-1 text-info"></i>
+                <h3 class="mt-2 text-dark">{{ my_properties_count }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Rent Due</h5>
+                <i class="bi bi-cash-coin fs-1 text-danger"></i>
+                <h3 class="mt-2 text-dark">{{ rent_due }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'transactions' %}" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Payments</h5>
+                <i class="bi bi-wallet2 fs-1 text-success"></i>
+                <h3 class="mt-2 text-dark">{{ total_payments }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'submit_complaint' %}" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Support Tickets</h5>
+                <i class="bi bi-life-preserver fs-1 text-warning"></i>
+                <h3 class="mt-2 text-dark">{{ support_tickets_open }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'account_settings' %}" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Account Settings</h5>
+                <i class="bi bi-life-preserver fs-1 text-warning"></i>
+                <h3 class="mt-2 text-dark">{{ support_tickets_open }}</h3>
+            </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Landlord Communication -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <h4 class="card-title mb-3 fw-bold text-dark">📨 Messages From Landlord</h4>
+            {% if landlord_messages %}
+            <ul class="list-group list-group-flush">
+                {% for message in landlord_messages %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>{{ message.sender.username }}</strong> - {{ message.subject }}<br>
+                        <small class="text-muted">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <a href="{% url 'view_message' message.id %}" class="btn btn-sm btn-outline-secondary">Reply</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="alert alert-info mb-0">No messages from your landlord.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+ <!-- Fraud Reports -->
+ <div class="card shadow-sm rounded-4 border-0 mb-4">
+    <div class="card-body">
+        <h4 class="card-title mb-3 text-dark">🚨 Your Fraud Reports</h4>
+        {% if fraud_reports %}
+            <ul class="list-group list-group-flush">
+                {% for report in fraud_reports %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ report.title }}</strong><br>
+                            <small class="text-muted">{{ report.feedback }}</small>
+                        </div>
+                        <span class="badge bg-{{ report.is_reviewed|yesno:'success,warning' }}">
+                            {{ report.is_reviewed|yesno:'Reviewed,Pending' }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="alert alert-info mb-0">
+                You haven't submitted any fraud reports yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Report a User -->
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body">
+        <h4 class="card-title mb-3 text-dark">📢 Report Another User</h4>
+        <div class="list-group">
+            {% for u in all_users %}
+                <a href="{% url 'report_fraud' u.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    {{ u.username }}
+                    <i class="bi bi-flag-fill text-danger"></i>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Report a User Modal -->
+
+
+<div class="container py-5">
+    <h2 class="fw-bold mb-4 text-dark text-center">🏠 Landlord Dashboard</h2>
+    <div class="text-center mb-4">
+        <img src="{% static 'image/default.jpg' %}" width="70" height="70" alt="Landlord Dashboard" class="img-fluid rounded-4">
+    <!-- Welcome -->
+    <div class="mb-4">
+        <h2 class="fw-bold text-primary">Welcome, {{ user.username }} 👋</h2>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Properties</h5>
+                <i class="bi bi-house-door-fill fs-1 text-info"></i>
+                <h3 class="mt-2 text-dark">{{ total_properties }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Tenants</h5>
+                <i class="bi bi-people-fill fs-1 text-success"></i>
+                <h3 class="mt-2 text-dark">{{ total_tenants }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Active Listings</h5>
+                <i class="bi bi-list-check fs-1 text-warning"></i>
+                <h3 class="mt-2 text-dark">{{ active_listings }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Pending Approvals</h5>
+                <i class="bi bi-clock-history fs-1 text-danger"></i>
+                <h3 class="mt-2 text-dark">{{ pending_approvals }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'kyc_status' %}" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">KYC Verification</h5>
+                🔐
+                <h3 class="mt-2 text-dark">{{ pending_approvals }}</h3>
+            </div>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'account_settings' %}" class="card shadow-sm border-0 rounded-4 text-center p-3 text-decoration-none">
+                <div class="card shadow-sm border-0 rounded-4 text-center p-3">
+                <h5 class="fw-bold">Account Settings</h5>
+                <i class="bi bi-life-preserver fs-1 text-warning"></i>
+                <h3 class="mt-2 text-dark">{{ support_tickets_open }}</h3>
+            </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Property Table 
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            <h4 class="card-title mb-3 fw-bold text-dark">📋 Recent Properties</h4>
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Rent</th>
+                            <th>Date Listed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for property in recent_properties %}
+                        <tr>
+                            <td>{{ property.title }}</td>
+                            <td>{{ property.location }}</td>
+                            <td>
+                                <span class="badge bg-{{ property.status|lower|yesno:'success,warning,danger' }}">
+                                    {{ property.status }}
+                                </span>
+                            </td>
+                            <td>${{ property.rent }}</td>
+                            <td>{{ property.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'property_detail' property.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No properties listed yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>-->
+
+    <!-- Tenant Messages -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <h4 class="card-title mb-3 fw-bold text-dark">📨 Tenant Messages</h4>
+            {% if tenant_messages %}
+            <ul class="list-group list-group-flush">
+                {% for message in tenant_messages %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>{{ message.tenant.username }}</strong> - {{ message.subject }}<br>
+                        <small class="text-muted">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <a href="{% url 'view_message' message.id %}" class="btn btn-sm btn-outline-secondary">Reply</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="alert alert-info mb-0">No new messages from tenants.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}

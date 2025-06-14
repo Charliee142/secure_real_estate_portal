@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="mb-3 text-danger text-center"><i class="bi bi-shield-exclamation"></i>Report Fraud</h2>
+                    <p class="mb-4 text-muted">If you suspect fraudulent activity, please fill out the form below and our team will investigate promptly.</p>
+
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Your Name</label>
+                            {{ form.name|add_class:"form-control" }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Your Email</label>
+                            {{ form.email|add_class:"form-control" }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_property" class="form-label">Property in Question</label>
+                            {{ form.property|add_class:"form-control" }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_message" class="form-label">Describe the Issue</label>
+                            {{ form.message|add_class:"form-control" }}
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100">Submit Report</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Transaction History</h2>
+
+    {% if transactions %}
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle border rounded shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Ref ID</th>
+                        <th scope="col">Property</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td><code>{{ transaction.reference }}</code></td>
+                        <td>
+                            <strong>{{ transaction.property.title }}</strong><br>
+                            <small class="text-muted">{{ transaction.property.location }}</small>
+                        </td>
+                        <td>
+                            {% if transaction.transaction_type == 'purchase' %}
+                                <span class="badge bg-primary">Purchase</span>
+                            {% elif transaction.transaction_type == 'rent' %}
+                                <span class="badge bg-info text-dark">Rent</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Other</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-success fw-bold">${{ transaction.amount }}</td>
+                        <td>
+                            <span class="badge bg-{% if transaction.status == 'completed' %}success{% elif transaction.status == 'pending' %}warning text-dark{% else %}danger{% endif %}">
+                                {{ transaction.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ transaction.created_at|date:"M d, Y - H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4" role="alert">
+            <i class="bi bi-info-circle"></i> No transactions found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

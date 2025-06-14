@@ -1,0 +1,44 @@
+<form method="get" action="{% url 'search' %}" class="form-inline mb-3 position-relative">
+    <input type="text" id="search-input" name="query" class="form-control mr-2" placeholder="Search Categories...">
+    <button type="submit" class="btn btn-primary">Search</button>
+    <!-- Suggestions will appear in this unordered list -->
+    <ul id="suggestions" class="list-group position-absolute" style="z-index: 1000; display: none;"></ul>
+</form>
+
+
+<script>
+    $(document).ready(function () {
+        // When the user types in the search input field
+        $('#search-input').on('input', function () {
+            let query = $(this).val();
+            if (query.length > 1) {  // Only search when the input length is greater than 1
+                $.ajax({
+                    url: "{% url 'suggest_category' %}",  // AJAX call to the suggest_category URL
+                    data: { 'query': query },  // Send the current query as data
+                    success: function (data) {
+                        let suggestions = $('#suggestions');
+                        suggestions.empty();  // Clear any existing suggestions
+                        if (data.length > 0) {
+                            suggestions.show();  // Show the suggestions box if there are results
+                            // Append each suggestion as a list item
+                            $.each(data, function (index, category) {
+                                suggestions.append(
+                                    `<li class="list-group-item">
+                                        <a href="{% url 'show_category' '' %}${category.slug}">${category.name}</a>
+                                    </li>`
+                                );
+                            });
+                        } else {
+                            suggestions.hide();  // Hide the suggestions box if no results
+                        }
+                    },
+                    error: function () {
+                        $('#suggestions').hide();  // Hide suggestions box on error
+                    }
+                });
+            } else {
+                $('#suggestions').hide();  // Hide the suggestions box if input is too short
+            }
+        });
+    });
+</script>

@@ -1,0 +1,17 @@
+<style>
+    body { font-family: Arial, sans-serif; }
+    .box { border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
+    .footer { margin-top: 20px; font-size: 0.9em; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>New Inquiry About "{{ property.title }}"</h2>
+    <p><strong>From:</strong> {{ name }} ({{ email }})</p>
+    <p><strong>Message:</strong></p>
+    <p>{{ message|linebreaks }}</p>
+  </div>
+  <div class="footer">
+    Sent from your real estate portal.
+  </div>
+

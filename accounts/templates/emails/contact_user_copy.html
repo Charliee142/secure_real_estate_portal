@@ -1,0 +1,19 @@
+<style>
+    body { font-family: Arial, sans-serif; }
+    .box { border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #f8f9fa; }
+    .footer { margin-top: 20px; font-size: 0.9em; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Thank You for Contacting Us!</h2>
+    <p>Hi {{ name }},</p>
+    <p>Here is a copy of your message regarding <strong>{{ property.title }}</strong>:</p>
+    <blockquote style="margin-left: 20px; border-left: 3px solid #ccc; padding-left: 15px;">{{ message|linebreaks }}</blockquote>
+    <p>The agent will get back to you soon.</p>
+  </div>
+  <div class="footer">
+    You are receiving this message because you contacted an agent on our real estate portal.
+  </div>
+</body>
+

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div id="dashboard-wrapper"
+         hx-get="{% url 'hx_tenant_dashboard' %}"
+         hx-trigger="load"
+         hx-target="#dashboard-wrapper"
+         hx-swap="innerHTML">
+        <!-- Loading Spinner -->
+        <div class="text-center my-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

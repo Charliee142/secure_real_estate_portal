@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h4 class="card-title mb-4 text-center">Review: {{ property.title }}</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Star Rating -->
+                        <div class="text-center mb-4 star-rating">
+                            {% for i in "54321" %}
+                                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}">
+                                <label for="star{{ i }}">&#9733;</label>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Comment Field -->
+                        <div class="mb-3">
+                            <label class="form-label">Your Comment</label>
+                            {{ form.comment }}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Star Rating Styles -->
+<style>
+.star-rating {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+  display: inline-flex;
+  font-size: 2rem;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: gold;
+}
+</style>
+
+{% endblock %}

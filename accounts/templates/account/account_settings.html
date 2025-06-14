@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-primary fw-bold">⚙️ Account Settings</h2>
+
+    <div class="list-group mb-4">
+        <a href="#" class="list-group-item list-group-item-action" 
+           hx-get="" 
+           hx-target="#settings-content" 
+           hx-swap="innerHTML">
+           👤 Edit Profile
+        </a>
+
+        <a href="{% url 'account_change_password' %}" class="list-group-item list-group-item-action" 
+           hx-get="{% url 'account_change_password' %}" 
+           hx-target="#settings-content" 
+           hx-swap="innerHTML">
+           🔒 Change Password
+        </a>
+        <a href="#" class="list-group-item list-group-item-action" 
+           hx-get="" 
+           hx-target="#settings-content" 
+           hx-swap="innerHTML">
+           🔔 Notification Preferences
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action" 
+           hx-get="" 
+           hx-target="#settings-content" 
+           hx-swap="innerHTML">
+           🛡️ Security & Devices
+        </a>
+        <a href="{% url 'account_logout' %}" 
+        class="list-group-item list-group-item-action text-danger" 
+        hx-get="{% url 'account_logout' %}" 
+        hx-target="#settings-content" 
+        hx-swap="innerHTML">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+     </a>
+
+        <a href="#" class="list-group-item list-group-item-action text-danger" 
+           hx-get="" 
+           hx-target="#settings-content" 
+           hx-swap="innerHTML">
+           🗑️ Delete Account
+        </a>
+    </div>
+
+    <div id="settings-content" class="card p-4 shadow-sm rounded-4 border-0 bg-light">
+        <p class="text-muted">Select a setting option to view and edit.</p>
+    </div>
+</div>
+{% endblock %}

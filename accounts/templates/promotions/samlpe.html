@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Active Promotions</h2>
+<ul>
+    {% for promo in promotions %}
+    <li>
+        <strong>{{ promo.property.title }}</strong> - <span style="color: green;">{{ promo.discount }}% Off</span>
+        <br>Expires on: {{ promo.expires_on }}
+        <br>
+        <a href="{% url 'edit_promotion' promo.id %}">Edit</a> |
+        <button onclick="confirmDelete('{{ promo.id }}')" style="color: red; border: none; background: none; cursor: pointer;">Delete</button>
+    </li>
+    {% empty %}
+    <li>No active promotions available.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'add_promotion' %}">Add New Promotion</a>
+
+<!-- JavaScript for Confirmation -->
+<script>
+    function confirmDelete(promoId) {
+        if (confirm("Are you sure you want to delete this promotion?")) {
+            window.location.href = "/accounts/promotions/delete/" + promoId + "/";
+        }
+    }
+</script>
+
+{% endblock %}
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Active Promotions</h2>
+<ul>
+    {% for promo in promotions %}
+    <li>
+        <strong>{{ promo.property.title }}</strong> - <span style="color: green;">{{ promo.discount }}% Off</span>
+        <br>Expires on: {{ promo.expires_on }}
+        <br>
+        <a href="{% url 'edit_promotion' promo.id %}">Edit</a> |
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                onclick="setDeletePromo('{{ promo.id }}', '{{ promo.property.title }}')">
+            Delete
+        </button>
+    </li>
+    {% empty %}
+    <li>No active promotions available.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'add_promotion' %}" class="btn btn-primary">Add New Promotion</a>
+
+<!-- Bootstrap Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the promotion for <strong id="promoTitle"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Setting Delete URL -->
+<script>
+    function setDeletePromo(promoId, promoTitle) {
+        document.getElementById('promoTitle').innerText = promoTitle;
+        document.getElementById('confirmDeleteBtn').href = "/accounts/promotions/delete/" + promoId + "/";
+    }
+</script>
+
+{% endblock %}
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Active Promotions</h2>
+<ul id="promo-list">
+    {% for promo in promotions %}
+    <li id="promo-{{ promo.id }}">
+        <strong>{{ promo.property.title }}</strong> - <span style="color: green;">{{ promo.discount }}% Off</span>
+        <br>Expires on: {{ promo.expires_on }}
+        <br>
+        <a href="{% url 'edit_promotion' promo.id %}">Edit</a> |
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                onclick="setDeletePromo('{{ promo.id }}', '{{ promo.property.title }}')">
+            Delete
+        </button>
+    </li>
+    {% empty %}
+    <li>No active promotions available.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'add_promotion' %}" class="btn btn-primary">Add New Promotion</a>
+
+<!-- Bootstrap Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the promotion for <strong id="promoTitle"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Toast for Success Message -->
+<div class="position-fixed top-50 start-50 translate-middle p-3" style="z-index: 11">
+    <div id="successToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto text-success">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Promotion deleted successfully!
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for AJAX Delete & Toast -->
+<script>
+    let deletePromoId = null;
+
+    function setDeletePromo(promoId, promoTitle) {
+        deletePromoId = promoId;
+        document.getElementById('promoTitle').innerText = promoTitle;
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+        if (deletePromoId) {
+            fetch(`/accounts/promotions/delete/${deletePromoId}/`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById(`promo-${deletePromoId}`).remove();  // Remove promo from list
+                    let toast = new bootstrap.Toast(document.getElementById('successToast'));  
+                    toast.show();  // Show success toast
+                    deletePromoId = null;
+                } else {
+                    alert("Error deleting promotion!");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+
+            var deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+            deleteModal.hide();  // Hide the modal
+        }
+    });
+</script>
+
+{% endblock %}

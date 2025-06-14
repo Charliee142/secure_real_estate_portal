@@ -1,0 +1,66 @@
+<!-- Welcome Section -->
+<div class="mb-4">
+    <h2 class="fw-bold text-primary">🏡 Welcome, {{ user.first_name }}!</h2>
+</div>
+
+<!-- KYC Status -->
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+        <h5 class="fw-bold mb-2">🔐 KYC Verification</h5>
+        {% if kyc.is_verified %}
+            <div class="alert alert-success">✅ Verified</div>
+        {% elif kyc.status == "pending" %}
+            <div class="alert alert-warning">⏳ Pending</div>
+        {% else %}
+            <div class="alert alert-danger">❌ Rejected — {{ kyc.feedback }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Rent Payment History -->
+<div id="rent-history"
+     hx-get="{% url 'hx_tenant_rent_history' %}"
+     hx-trigger="load"
+     hx-swap="innerHTML">
+    <div class="card mb-4">
+        <div class="card-body text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance Requests -->
+<div id="maintenance-requests"
+     hx-get="{% url 'hx_tenant_maintenance' %}"
+     hx-trigger="load"
+     hx-swap="innerHTML">
+    <div class="card mb-4">
+        <div class="card-body text-center py-5">
+            <div class="spinner-border text-secondary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Landlord Messages -->
+<div id="landlord-messages"
+     hx-get="{% url 'hx_tenant_messages' %}"
+     hx-trigger="load"
+     hx-swap="innerHTML">
+    <div class="card mb-4">
+        <div class="card-body text-center py-5">
+            <div class="spinner-border text-info" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Lease Info -->
+<div id="lease-summary"
+     hx-get="{% url 'hx_tenant_lease' %}"
+     hx-trigger="load"
+     hx-swap="innerHTML">
+    <div class="card mb-4">
+        <div class="card-body text-center py-5">
+            <div class="spinner-border text-success" role="status"></div>
+        </div>
+    </div>
+</div>

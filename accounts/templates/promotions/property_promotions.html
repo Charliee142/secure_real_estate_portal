@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+            <h2 class="card-title mb-4 text-primary">🏷️ Promotions for <span class="text-dark">{{ property.title }}</span></h2>
+            {% if promotions %}
+            <div class="list-group">
+                {% for promo in promotions %}
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-3 my-2 shadow-sm">
+                        <div>
+                            <span class="badge bg-success fs-6 me-2">{{ promo.discount }}% Off</span>
+                            <div class="alert alert-success mt-3" role="alert">
+                                🎉 Great news! You have active promotions for this property.
+                            </div>
+                            <div class="alert alert-info mt-3" role="alert">
+                                🏷️ Check out the details of your active promotions!
+                                <p class="text-muted small mb-2">Expires on: {{ promo.expires_on }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning mt-3" role="alert">
+                😞 The promotions for this property are no longer active.
+            </div>
+            <p class=" small mb-2">Check back later for new promotions!</p>
+        {% endif %}
+        
+
+            <div class="text-end mt-4">
+                <a href="{% url 'active_promotions' %}" class="btn btn-outline-primary rounded-pill">
+                    View All Promotions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

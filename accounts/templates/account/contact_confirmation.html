@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success shadow-sm p-4 rounded">
+        <h4 class="alert-heading">Message Sent Successfully!</h4>
+        <p>Your message regarding <strong>{{ property_title }}</strong> has been sent to the agent.</p>
+        <hr>
+        <p class="mb-0">The agent will get in touch with you shortly. A copy of your message has been sent to your email.</p>
+    </div>
+    <a href="{% url 'property_list' %}" class="btn btn-outline-secondary mt-3">Back to Listings</a>
+</div>
+{% endblock %}
