@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="mt-5">Contact Agent</h4>
+<form method="post" class="p-3 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="name" class="form-label">Your Name</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Your Email</label>
+        <input type="email" class="form-control" name="email" required>
+    </div>
+    <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" name="message" rows="4" placeholder="I’m interested in this property..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+</form>
+
+{% endblock %}

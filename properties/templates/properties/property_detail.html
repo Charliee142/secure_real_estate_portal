@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ property.title }}{% endblock %}
+
+{% block content %}
+<style>
+    .object-fit-cover {
+  object-fit: cover;
+}
+</style>
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Hero Image Section -->
+<section class="position-relative" style="max-height: 450px; overflow: hidden;">
+    <img src="{{ property.image.url }}" alt="{{ property.title }}" class="w-100 object-fit-cover" style="height: 100%; object-fit: cover;">
+    <div class="position-absolute top-0 start-0 m-3">
+        <span class="badge px-4 py-2 {% if property.is_rental %}bg-info{% else %}bg-success{% endif %} text-white fs-6">
+            {% if property.is_rental %}For Rent{% else %}For Sale{% endif %}
+        </span>
+    </div>
+</section>
+
+<!-- Property Details -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <h2 class="fw-bold text-primary">{{ property.title }}</h2>
+                <p class="text-muted"><i class="bi bi-geo-alt-fill me-1"></i>Location: {{ property.location }}</p>
+
+                 <!-- Display if it's for sale or rent -->
+                    <span class="badge {% if property.is_rental %}bg-info{% else %}bg-success{% endif %}">
+                        {% if property.is_rental %}For Rent{% else %}For Sale{% endif %}
+                    </span>
+
+                    <!-- Display if it's verified-->
+                    <span class="badge bg-primary">
+                        {{ property.status }}
+                    </span>
+
+                <h4 class="fw-bold text-danger mt-3">
+                    NGN {% if property.is_rental %}{{ property.rental_price }} <small class="text-muted">/ month</small>{% else %}{{ property.sale_price }}{% endif %}
+                </h4>
+
+                <hr>
+        
+                    {% if promotions %}
+                    {% for promo in promotions %}
+                        {% if promo.discount > 40 %}
+                        <div class="alert alert-danger">
+                            🔥 Hot Deal! This property is currently {{ promo.discount }}% off. Offer ends on {{ promo.expires_on }}.
+                            <a href="{% url 'active_promotions' %}" class="btn btn-outline-primary rounded-pill">
+                                See All Promotions
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-success">
+                            🎉 This property has a {{ promo.discount }}% discount available until {{ promo.expires_on }}.
+                                <a href="{% url 'active_promotions' %}" class="btn btn-outline-primary rounded-pill">
+                                    See All Promotions
+                                </a>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+
+
+                <h5 class="fw-semibold">Property Description</h5>
+                <p>{{ property.description|linebreaks }}</p>
+
+                <div class="mt-4 d-flex flex-wrap gap-2">
+                    {% if user.is_authenticated %}
+                        {% if property.is_rental %}
+                            {% if user_has_rented_property %}
+                                <button class="btn btn-secondary" disabled>Already Paid Rent</button>
+                                <a href="{% url 'contact_agent' property.id %}" class="btn btn-outline-primary">Contact Agent</a>
+                            {% else %}
+                                <a href="{% url 'book_property' property.id %}" class="btn btn-success">Pay Rent</a>
+                                <a href="{% url 'contact_agent' property.id %}" class="btn btn-outline-primary">Contact Agent</a>
+                            {% endif %}
+                        {% else %}
+                            {% if user_has_bought_property %}
+                                <button class="btn btn-secondary" disabled>Already Bought</button>
+                                <a href="{% url 'contact_agent' property.id %}" class="btn btn-outline-primary">Contact Agent</a>
+                            {% else %}
+                                <a href="{% url 'initiate_payment' property.id 1 %}" class="btn btn-primary">Buy Property</a>
+                                <a href="{% url 'contact_agent' property.id %}" class="btn btn-outline-primary">Contact Agent</a>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="btn btn-warning">Login to Book</a>
+                        <a href="{% url 'contact_agent' property.id %}" class="btn btn-outline-primary">Contact Agent</a>
+                    {% endif %}
+                
+                    <a href="{% url 'property_list' %}" class="btn btn-outline-secondary">Back to Listings</a>
+                </div>
+                
+            </div>
+
+            <!-- Sidebar / Additional Info -->
+            <div class="col-lg-4">
+                <div class="bg-light p-4 rounded shadow-sm">
+                    <h6 class="fw-bold mb-3">Quick Info</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><strong>Category:</strong> {{ property.category }}</li>
+                        <li><strong>Type:</strong> {% if property.is_rental %}Rental{% else %}Sale{% endif %}</li>
+                        <li><strong>Posted On:</strong> {{ property.created_at|date:"F j, Y" }}</li>
+                        <li><strong>Listed By:</strong> {{ property.owner.user.username }}</li>
+                        <a href="{% url 'report_fraud' property.owner.id %}" class="btn btn-success mt-2">Report Fraud</a>
+                        <!-- Add more fields as needed -->
+                    </ul>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <h3>Reviews:</h3>
+            {% for review in property.reviews.all %}
+                <div class="review border p-3 mb-3 rounded bg-light mt-4">
+                    <strong>{{ review.user.username }}</strong> 
+                    - ⭐ {{ review.rating }}/5
+                    <p>{{ review.comment }}</p>
+                    <small>{{ review.created_at|date:"F j, Y" }}</small>
+                </div>
+            {% empty %}
+                <p>No reviews yet. Be the first to review this property!</p>
+            {% endfor %}
+            
+            <a href="{% url 'add_review' property.id %}" class="btn btn-success mt-3">Add Your Review</a>
+            
+            {% endif %}
+        </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

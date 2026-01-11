@@ -1,0 +1,5 @@
+<h3>New KYC Submission</h3>
+<p><strong>User:</strong> {{ user.get_full_name }} ({{ user.email }})</p>
+<p>A new KYC verification has been submitted. Please review it in the admin panel.</p>
+<a href="{{ request.scheme }}://{{ request.get_host }}/admin/yourapp/kycmodel/">View in Admin</a>
+

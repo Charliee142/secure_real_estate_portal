@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center">
+        <div class="alert alert-success shadow-sm rounded-3">
+            <h4 class="alert-heading"><i class="bi bi-check-circle-fill text-success me-2"></i>KYC Submitted</h4>
+            <p class="mb-0">Thank you! Your KYC documents have been successfully submitted and are under review. You will be notified once verification is complete.</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Return to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h3 class="card-title">KYC Verification Status</h3>
+
+            {% if kyc %}
+                <p><strong>Status:</strong>
+                    <span class="badge 
+                        {% if kyc.status == 'approved' %} bg-success 
+                        {% elif kyc.status == 'pending' %} bg-warning 
+                        {% else %} bg-danger 
+                        {% endif %}">
+                        {{ kyc.get_status_display }}
+                    </span>
+                </p>
+
+                <p><strong>Submitted At:</strong> {{ kyc.submitted_at }}</p>
+
+                {% if kyc.feedback %}
+                {% if user.kycverification.is_verified %}
+                <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
+                    <i class="bi bi-patch-check-fill me-2 fs-4"></i> Your account is <strong class="ms-1">Verified</strong>.
+                </div>
+            {% elif user.kycverification.status == "pending" %}
+                <div class="alert alert-warning d-flex align-items-center mb-0" role="alert">
+                    <i class="bi bi-hourglass-split me-2 fs-4"></i> Your KYC is <strong class="ms-1">Pending Approval</strong>.
+                </div>
+            {% else %}
+                <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
+                    <i class="bi bi-x-octagon-fill me-2 fs-4"></i>
+                    <div>
+                        Your KYC was <strong>Rejected</strong>. Reason: <em>{{ user.kycverification.feedback }}</em>
+                    </div>
+                </div>
+                <a href="{% url 'submit_kyc' %}" class="text-decoration-none mt-2"> Resubmit KYC</a>
+            {% endif %}
+                {% endif %}
+            {% else %}
+                <div class="alert alert-secondary">You have not submitted KYC documents yet.</div>
+                <a href="{% url 'submit_kyc' %}" class="btn btn-primary">Submit Now</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

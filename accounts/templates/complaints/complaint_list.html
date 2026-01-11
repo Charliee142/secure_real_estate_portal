@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Complaints</h2>
+    <ul class="list-group">
+        {% for complaint in complaints %}
+        <li class="list-group-item">
+            <a href="{% url 'complaint_detail' complaint.id %}">Complaint #{{ complaint.id }} - {{ complaint.created_at }}</a>
+        </li>
+        {% empty %}
+        <p>No complaints submitted yet.</p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

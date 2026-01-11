@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .card img {
+    height: 220px;
+    object-fit: cover;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+  .card-title {
+    font-size: 1.1rem;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    transition: 0.3s ease;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<section class="py-5">
+  <div class="container">
+    <h1 class="text-center mb-4 fw-bold text-primary">Explore Properties</h1>
+
+    <div class="row">
+      <!-- Sidebar Filter -->
+      <div class="col-md-4">
+        <form method="GET" class="bg-light p-4 rounded shadow-sm mb-4">
+          <h5 class="mb-3 text-primary fw-bold">Filter Properties</h5>
+          {{ filter.form.as_p }}
+          <button type="submit" class="btn btn-primary w-100 mt-3">Apply Filters</button>
+        </form>
+      </div>
+
+      <!-- Property Grid -->
+      <div class="col-md-8">
+        <div class="row g-4">
+          {% for property in filter.qs %}
+          <div class="col-md-12 col-lg-6">
+            <div class="card h-100 shadow-sm border-0">
+              <div class="position-relative">
+                <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.title }}">
+                <span class="badge position-absolute top-0 start-0 m-2 px-3 py-2 rounded-pill {% if property.is_rental %}bg-info{% else %}bg-success{% endif %}">
+                  {% if property.is_rental %}For Rent{% else %}For Sale{% endif %}
+                </span>
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-semibold">{{ property.title }}</h5>
+                <p class="text-muted mb-2"><i class="bi bi-geo-alt"></i> {{ property.location }}</p>
+                <p class="text-primary fw-bold fs-5">
+                  NGN {% if property.is_rental %}{{ property.rental_price }} <small class="text-muted">/ month</small>{% else %}{{ property.sale_price }}{% endif %}
+                </p>
+                <a href="{% url 'property_detail' property.slug %}" class="btn btn-outline-primary mt-auto">View Details</a>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-12">
+            <div class="alert alert-warning text-center">No properties found.</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

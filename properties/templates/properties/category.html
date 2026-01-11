@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }}{% endblock title %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar Search -->
+        <div class="col-lg-4 col-md-5">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">🔍 Search for a Page</h5>
+                    <form method="get" action="">
+                        <input type="text" id="search-input" class="form-control my-2" placeholder="Start typing...">
+                    </form>
+                    <ul id="suggestions" class="list-group list-group-flush"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8 col-md-7">
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body">
+                    <h2 class="card-title text-primary">{{ category.name }}</h2>
+                    <p class="text-muted">👁️ Visits: <b>{{ category.views }}</b></p>
+
+                    {% if category.likes > 0 %}
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <strong id="like-count" class="fs-5">{{ category.likes }}</strong> people like this category
+                            <button id="like-btn" data-category-id="{{ category.id }}" class="btn btn-outline-primary btn-sm">
+                                👍 Like
+                            </button>
+                        </div>
+                    {% elif category.likes == 0 %}
+                    <p><b>{{ category.likes }}</b> person likes this category</p>
+                    <button id="like-btn" data-category-id="{{ category.id }}" class="btn btn-outline-primary btn-sm">
+                        👍 Be the first to like this
+                    </button>
+                    {% endif %}
+
+                    <ul class="list-group list-group-flush">
+                        {% for page in pages %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'property_detail' page.slug %}" class="fw-medium">{{ page.title }}</a>
+                            {% if page.views > 0 %}
+                                <span class="badge bg-primary rounded-pill">{{ page.views }} view{{ page.views|pluralize }}</span>
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item">No pages currently available in this category.</li>
+                        <a href="#" class="btn btn-dark mt-3">Add Page</a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Property Search Section -->
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">🏘️ Search for properties in this category</h5>
+                    <form method="get" action="" class="d-flex gap-2">
+                        <input type="text" name="query" class="form-control" placeholder="Enter keywords...">
+                        <button type="submit" class="btn btn-success">Search</button>
+                    </form>
+
+                    {% if query %}
+                    <div class="mt-4">
+                        <h5 class="text-secondary">Search Results for "<strong>{{ query }}</strong>"</h5>
+                        {% if search_results %}
+                            <ul class="list-group list-group-flush mt-3">
+                                {% for result in search_results %}
+                                <li class="list-group-item">
+                                    {% if result.url %}
+                                        <a href="#" class="fw-semibold">{{ result.title }}</a>
+                                        <p class="text-muted small">{{ result.summary }}</p>
+                                    {% else %}
+                                        <a href="{% url 'property_detail' result.slug %}" class="fw-semibold">{{ result.title }}</a>
+                                        <p class="text-muted small">{{ result.snippet }}</p>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-danger mt-3">No results found for "{{ query }}".</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<script>
+    $(document).ready(function () {
+        $('#like-btn').click(function () {
+            var categoryId = $(this).data('category-id');
+            $.ajax({
+                url: "{% url 'like_category' %}",
+                data: { 'category_id': categoryId },
+                success: function (data) {
+                    $('#like-count').text(data.likes);
+                },
+                error: function () {
+                    alert('Error liking the category.');
+                }
+            });
+        });
+    });
+
+    document.getElementById("search-input").addEventListener("input", function () {
+        const query = this.value;
+
+        if (query.length > 0) {
+            fetch(`/property-suggestions/?query=${query}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let suggestionBox = document.getElementById('suggestions');
+                    suggestionBox.innerHTML = '';  // Clear previous suggestions
+
+                    data.forEach(item => {
+                        let listItem = document.createElement('li');
+                        listItem.textContent = item;
+                        suggestionBox.appendChild(listItem);
+                    });
+                });
+        }
+    });
+    function debounce(func, delay) {
+        let timeout;
+        return function () {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
+    categoryInput.addEventListener('input', debounce(function () {
+        const query = this.value;
+        // Make the AJAX request here as before
+    }, 3));  // Delay of 300 milliseconds
+</script>
+
+     {% endblock content %}
